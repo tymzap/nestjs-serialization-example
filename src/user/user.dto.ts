@@ -1,9 +1,11 @@
-import { Exclude, Transform } from 'class-transformer';
+import { Exclude, Expose, Transform } from 'class-transformer';
 import { formatDate } from '../shared/format-date';
 
 export class UserDto {
   id: string;
   name: string;
+
+  @Expose({ groups: ['admin'] })
   isActive: boolean;
 
   @Exclude()

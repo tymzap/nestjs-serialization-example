@@ -6,10 +6,7 @@ import {
 } from '@nestjs/common';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import {
-  ClassConstructor,
-  plainToInstance,
-} from 'class-transformer';
+import { ClassConstructor, plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class SerializationInterceptor implements NestInterceptor {
@@ -19,10 +16,16 @@ export class SerializationInterceptor implements NestInterceptor {
     context: ExecutionContext,
     next: CallHandler<unknown>,
   ): Observable<unknown> {
-    return next.handle().pipe(map((data) => this.serialize(data)));
+    const request = context.switchToHttp().getRequest();
+    const user = request.user;
+    const groups = user?.roles ?? [];
+
+    return next.handle().pipe(map((data) => this.serialize(data, groups)));
   }
 
-  private serialize(value: unknown) {
-    return plainToInstance(this.classConstructor, value);
+  private serialize(value: unknown, groups: string[]) {
+    return plainToInstance(this.classConstructor, value, {
+      groups,
+    });
   }
 }
