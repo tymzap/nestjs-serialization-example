@@ -6,6 +6,14 @@ export class UserService {
     return this.users.find((user) => user.id === id);
   }
 
+  getUsers() {
+    return {
+      page: 1,
+      totalPages: 1,
+      data: this.users,
+    };
+  }
+
   private readonly users = [
     {
       id: '1',
